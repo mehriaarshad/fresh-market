@@ -1,0 +1,14 @@
+import { Link } from 'react-router-dom'
+import { ArrowRight, ShoppingBag, Trash2 } from 'lucide-react'
+import { useStore } from '../context/StoreContext'
+import QuantityControl from '../components/ui/QuantityControl'
+export default function Cart() {
+  const { cart, subtotal, updateQuantity, removeFromCart, language } = useStore()
+  const fa = language === 'fa'
+  const delivery = subtotal >= 35 || subtotal === 0 ? 0 : 3.5
+  return <div className="container page-section"><div className="page-heading"><span className="eyebrow">{fa?'سبد خرید شما':'YOUR BASKET'}</span><h1>{fa?'سبد خرید':'Shopping cart'}</h1><p>{fa?'خرید خوب تنها با چند کلیک فاصله دارد.':'Good choices are just a few clicks away.'}</p></div>
+    {!cart.length ? <div className="empty-state cart-empty"><ShoppingBag size={42}/><h2>{fa?'سبد خرید شما خالی است':'Your basket is waiting'}</h2><p>{fa?'هنوز محصولی به سبد اضافه نکرده‌اید.':"Looks like you haven't added anything yet."}</p><Link to="/shop" className="button button-dark">{fa?'رفتن به فروشگاه':'Explore the shop'} <ArrowRight size={17}/></Link></div> :
+    <div className="cart-layout"><div className="cart-items"><div className="cart-table-head"><span>{fa?'محصول':'Product'}</span><span>{fa?'تعداد':'Quantity'}</span><span>{fa?'مجموع':'Total'}</span></div>{cart.map(item=><div className="cart-row" key={item.id}><div className="cart-product"><div className="cart-thumb" style={{background:item.color}}>{item.emoji}</div><div><Link to={`/product/${item.id}`}><b>{fa?item.dari:item.name}</b></Link><small>${item.price.toFixed(2)} / {item.unit}</small></div></div><div className="cart-quantity"><QuantityControl value={item.quantity} onChange={v=>updateQuantity(item.id,v)}/><button className="remove-button" onClick={()=>removeFromCart(item.id)} aria-label={fa?'حذف محصول':'Remove item'}><Trash2 size={15}/></button></div><b className="cart-line-total">${(item.price*item.quantity).toFixed(2)}</b></div>)}<Link to="/shop" className="text-link continue-link">← {fa?'ادامه خرید':'Continue shopping'}</Link></div>
+    <aside className="order-summary"><h3>{fa?'خلاصه سفارش':'Order summary'}</h3><div><span>{fa?'مجموع فرعی':'Subtotal'}</span><b>${subtotal.toFixed(2)}</b></div><div><span>{fa?'هزینه ارسال':'Delivery'}</span><b>{delivery===0?'FREE':`$${delivery.toFixed(2)}`}</b></div>{subtotal<35&&<p className="shipping-hint">{fa?`برای ارسال رایگان ${(35-subtotal).toFixed(2)} دالر دیگر خرید کنید.`:`Add $${(35-subtotal).toFixed(2)} more for free delivery.`}</p>}<div className="summary-total"><span>{fa?'مجموع':'Total'}</span><strong>${(subtotal+delivery).toFixed(2)}</strong></div><Link to="/checkout" className="button button-dark full-button">{fa?'ادامه به پرداخت':'Continue to checkout'} <ArrowRight size={17}/></Link><small className="secure-note">{fa?'پرداخت آزمایشی — پول واقعی دریافت نمی‌شود':'Secure demo checkout · No real payment is taken'}</small></aside></div>}
+  </div>
+}

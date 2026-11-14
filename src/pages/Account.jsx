@@ -1,0 +1,9 @@
+import { Link, Navigate } from 'react-router-dom'
+import { PackageCheck, UserRound, LogOut } from 'lucide-react'
+import { useStore } from '../context/StoreContext'
+export default function Account() {
+  const {user,orders,logout,language}=useStore()
+  const fa=language==='fa'
+  if(!user) return <Navigate to="/login" replace/>
+  return <div className="container page-section"><div className="page-heading"><span className="eyebrow">{fa?'حساب فریش مارکت شما':'YOUR FRESH MARKET'}</span><h1>{fa?'سلام،':'Hello,'} {user.name.split(' ')[0]}.</h1><p>{fa?'حساب کاربری و سفارش‌های اخیر شما.':"Here's your account and recent orders."}</p></div><div className="account-layout"><aside className="account-profile"><div className="profile-icon"><UserRound size={30}/></div><h3>{user.name}</h3><p>{user.email}</p><button className="logout-button" onClick={logout}><LogOut size={16}/> {fa?'خروج از حساب':'Sign out'}</button></aside><section className="account-orders"><div className="account-section-title"><h2>{fa?'سفارش‌های شما':'Your orders'}</h2><span>{orders.length} total</span></div>{!orders.length?<div className="empty-state"><PackageCheck size={38}/><h3>{fa?'هنوز سفارشی ندارید':'No orders yet'}</h3><p>{fa?'سفارش‌های ثبت‌شده شما اینجا نمایش داده می‌شود.':'Your placed orders will appear here.'}</p><Link to="/shop" className="button button-dark">{fa?'شروع خرید':'Start shopping'}</Link></div>:orders.map(order=><article className="order-card" key={order.id}><div className="order-card-top"><div><b>{order.id}</b><small>{new Date(order.date).toLocaleDateString()}</small></div><span className="status-pill">{order.status}</span></div><div className="order-card-items">{order.items.map(item=><span key={item.id}>{item.emoji} {item.name} × {item.quantity}</span>)}</div><div className="order-card-total"><span>{fa?'مجموع سفارش':'Order total'}</span><b>${order.total.toFixed(2)}</b></div></article>)}</section></div></div>
+}
